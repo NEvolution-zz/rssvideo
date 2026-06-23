@@ -2,29 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RSS Video Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>RSS Dramas Player</title>
+  <meta name="theme-color" content="#0F0F23" />
+  <meta name="description" content="Browse and play videos from the allrss.se/dramas RSS feed" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="toolbar">
-    <button id="back-button" type="button" hidden>&larr; Back</button>
-    <input id="search-input" type="search" placeholder="Search videos by title" />
+    <button id="back-button" type="button" class="icon-button" hidden aria-label="Back">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Back</span>
+    </button>
+    <div class="search-wrap">
+      <input id="search-input" type="search" placeholder="Search videos by title" aria-label="Search videos by title" />
+    </div>
   </header>
 
-  <p id="feed-error" class="error" hidden></p>
+  <p id="feed-error" class="error" role="alert" hidden></p>
 
-  <table id="video-table" class="video-table">
+  <div id="table-skeleton" class="skeleton-list" aria-hidden="true">
+    <div class="skeleton-row"></div>
+    <div class="skeleton-row"></div>
+    <div class="skeleton-row"></div>
+    <div class="skeleton-row"></div>
+    <div class="skeleton-row"></div>
+  </div>
+
+  <table id="video-table" class="video-table" hidden>
     <thead>
       <tr><th></th><th>Title</th><th>Date</th></tr>
     </thead>
     <tbody id="video-table-body"></tbody>
   </table>
 
+  <p id="empty-state" class="empty-state" hidden>No videos match your search.</p>
+
   <section id="player-panel" class="player-panel" hidden>
-    <button id="player-close">&larr; Back to list</button>
+    <button id="player-close" class="icon-button">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Back to list</span>
+    </button>
     <video id="player-video" controls></video>
-    <p id="player-error" class="error" hidden></p>
+    <p id="player-error" class="error" role="alert" hidden></p>
   </section>
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>

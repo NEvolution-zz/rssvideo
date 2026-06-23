@@ -2,14 +2,21 @@ import { filterItemsByQuery, needsHls, isSubFeed } from './clientLogic.mjs';
 
 const FEED_URL = 'https://allrss.se/dramas';
 
+const BOOKMARK_ICON_PATH = 'M6 2h12a1 1 0 0 1 1 1v19l-7-4-7 4V3a1 1 0 0 1 1-1z';
+const FOLDER_ICON_PATH = 'M3 5a1 1 0 0 1 1-1h4.5l2 2H20a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5z';
+
 const searchInput = document.getElementById('search-input');
 const feedError = document.getElementById('feed-error');
+const tableSkeleton = document.getElementById('table-skeleton');
+const videoTable = document.getElementById('video-table');
 const videoTableBody = document.getElementById('video-table-body');
+const emptyState = document.getElementById('empty-state');
 const playerPanel = document.getElementById('player-panel');
 const playerVideo = document.getElementById('player-video');
 const playerError = document.getElementById('player-error');
 const playerClose = document.getElementById('player-close');
 const backButton = document.getElementById('back-button');
+const toolbar = document.querySelector('.toolbar');
 
 let currentItems = [];
 let hls = null;
@@ -32,21 +39,40 @@ function updateBackButton() {
   backButton.hidden = feedHistory.length === 0;
 }
 
+function updateToolbarHeightVar() {
+  document.documentElement.style.setProperty('--toolbar-height', `${toolbar.offsetHeight}px`);
+}
+
 function renderCurrentView() {
   renderTable(filterItemsByQuery(currentItems, searchInput.value));
+}
+
+function createIcon(pathD) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('width', '14');
+  svg.setAttribute('height', '14');
+  svg.setAttribute('aria-hidden', 'true');
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', pathD);
+  path.setAttribute('fill', 'currentColor');
+  svg.appendChild(path);
+  return svg;
 }
 
 function appendBadges(target, item, subFeed) {
   if (item.bookmark) {
     const badge = document.createElement('span');
     badge.className = 'bookmark-badge';
-    badge.textContent = '★';
+    badge.setAttribute('aria-label', 'Bookmarked');
+    badge.appendChild(createIcon(BOOKMARK_ICON_PATH));
     target.appendChild(badge);
   }
   if (subFeed) {
     const folderBadge = document.createElement('span');
     folderBadge.className = 'subfeed-badge';
-    folderBadge.textContent = '📁';
+    folderBadge.setAttribute('aria-label', 'Category');
+    folderBadge.appendChild(createIcon(FOLDER_ICON_PATH));
     target.appendChild(folderBadge);
   }
 }
@@ -76,6 +102,9 @@ function renderTable(items) {
     const img = document.createElement('img');
     img.src = item.thumbnail || 'placeholder.svg';
     img.alt = item.title;
+    img.loading = 'lazy';
+    img.width = 60;
+    img.height = 34;
     thumbCell.appendChild(img);
     row.appendChild(thumbCell);
 
@@ -92,6 +121,10 @@ function renderTable(items) {
 
     videoTableBody.appendChild(row);
   });
+
+  const hasItems = items.length > 0;
+  videoTable.hidden = !hasItems;
+  emptyState.hidden = hasItems;
 }
 
 async function navigateToSubFeed(item) {
@@ -152,6 +185,9 @@ function playItem(item) {
 
 async function loadFeed(url) {
   showFeedError('');
+  tableSkeleton.hidden = false;
+  videoTable.hidden = true;
+  emptyState.hidden = true;
   try {
     const res = await fetch(`/api/feed?url=${encodeURIComponent(url)}`);
     const body = await res.json();
@@ -164,8 +200,13 @@ async function loadFeed(url) {
     renderCurrentView();
     return true;
   } catch (err) {
-    showFeedError(`Failed to load feed: ${err.message}`);
+    const message = navigator.onLine === false
+      ? 'You are offline. Check your connection and try again.'
+      : `Failed to load feed: ${err.message}`;
+    showFeedError(message);
     return false;
+  } finally {
+    tableSkeleton.hidden = true;
   }
 }
 
@@ -196,4 +237,15 @@ backButton.addEventListener('click', async () => {
   }
 });
 
+updateToolbarHeightVar();
+window.addEventListener('resize', updateToolbarHeightVar);
+
 loadFeed(FEED_URL);
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {
+      /* offline support is a progressive enhancement; ignore registration failures */
+    });
+  });
+}

@@ -90,6 +90,9 @@ test('GET / serves markup with the expected element ids', async () => {
     assert.match(text, /id="player-video"/);
     assert.match(text, /id="back-button"/);
     assert.match(text, /id="video-table"/);
+    assert.match(text, /id="table-skeleton"/);
+    assert.match(text, /id="empty-state"/);
+    assert.match(text, /rel="manifest"/);
   } finally {
     appServer.close();
   }
