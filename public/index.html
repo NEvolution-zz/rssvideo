@@ -10,15 +10,11 @@
   <header class="toolbar">
     <button id="back-button" type="button" hidden>&larr; Back</button>
     <input id="search-input" type="search" placeholder="Search videos by title" />
-    <button id="view-grid-btn" type="button" class="view-toggle active">Grid</button>
-    <button id="view-table-btn" type="button" class="view-toggle">Table</button>
   </header>
 
   <p id="feed-error" class="error" hidden></p>
 
-  <main id="video-grid" class="video-grid"></main>
-
-  <table id="video-table" class="video-table" hidden>
+  <table id="video-table" class="video-table">
     <thead>
       <tr><th></th><th>Title</th><th>Date</th></tr>
     </thead>
@@ -26,7 +22,7 @@
   </table>
 
   <section id="player-panel" class="player-panel" hidden>
-    <button id="player-close">&larr; Back to grid</button>
+    <button id="player-close">&larr; Back to list</button>
     <video id="player-video" controls></video>
     <p id="player-error" class="error" hidden></p>
   </section>

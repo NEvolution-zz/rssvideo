@@ -33,57 +33,6 @@ body {
   padding: 0 1rem;
 }
 
-/* .video-grid sets its own `display`, which would otherwise override the
-   browser's default [hidden] rule (author styles always beat the
-   user-agent stylesheet) — this keeps the JS `hidden` toggle effective. */
-.video-grid[hidden] {
-  display: none;
-}
-
-.video-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1rem;
-  padding: 1rem;
-}
-
-.video-card {
-  background: #1c1f26;
-  border-radius: 6px;
-  overflow: hidden;
-  cursor: pointer;
-  position: relative;
-}
-
-.video-card.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.video-card img {
-  width: 100%;
-  display: block;
-}
-
-.video-card .card-title {
-  padding: 0.5rem;
-  font-size: 0.95rem;
-}
-
-.video-card .bookmark-badge {
-  position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
-  background: gold;
-  color: #14161b;
-  border-radius: 50%;
-  width: 1.5rem;
-  height: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .player-panel {
   padding: 1rem;
 }
@@ -101,31 +50,6 @@ body {
   background: #14161b;
   color: inherit;
   cursor: pointer;
-}
-
-.video-card .subfeed-badge {
-  position: absolute;
-  top: 0.25rem;
-  left: 0.25rem;
-  background: #3a3f4b;
-  color: #e6e6e6;
-  border-radius: 4px;
-  padding: 0.1rem 0.35rem;
-  font-size: 0.85rem;
-}
-
-.view-toggle {
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  border: 1px solid #3a3f4b;
-  background: #14161b;
-  color: inherit;
-  cursor: pointer;
-}
-
-.view-toggle.active {
-  background: #3a3f4b;
-  font-weight: bold;
 }
 
 .video-table {

@@ -86,12 +86,9 @@ test('GET / serves markup with the expected element ids', async () => {
     const res = await fetch(`http://localhost:${appPort}/`);
     const text = await res.text();
     assert.match(text, /id="search-input"/);
-    assert.match(text, /id="video-grid"/);
     assert.match(text, /id="player-panel"/);
     assert.match(text, /id="player-video"/);
     assert.match(text, /id="back-button"/);
-    assert.match(text, /id="view-grid-btn"/);
-    assert.match(text, /id="view-table-btn"/);
     assert.match(text, /id="video-table"/);
   } finally {
     appServer.close();

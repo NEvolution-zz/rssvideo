@@ -1,15 +1,10 @@
 import { filterItemsByQuery, needsHls, isSubFeed } from './clientLogic.mjs';
 
 const FEED_URL = 'https://allrss.se/dramas';
-const VIEW_STORAGE_KEY = 'rssvideo.view';
 
 const searchInput = document.getElementById('search-input');
 const feedError = document.getElementById('feed-error');
-const videoGrid = document.getElementById('video-grid');
-const videoTable = document.getElementById('video-table');
 const videoTableBody = document.getElementById('video-table-body');
-const viewGridBtn = document.getElementById('view-grid-btn');
-const viewTableBtn = document.getElementById('view-table-btn');
 const playerPanel = document.getElementById('player-panel');
 const playerVideo = document.getElementById('player-video');
 const playerError = document.getElementById('player-error');
@@ -22,9 +17,6 @@ let hls = null;
 // navigated-into sub-feed).
 let currentFeedUrl = null;
 let feedHistory = [];
-
-const storedView = localStorage.getItem(VIEW_STORAGE_KEY);
-let currentView = storedView === 'table' ? 'table' : 'grid';
 
 function showFeedError(message) {
   feedError.textContent = message;
@@ -40,23 +32,8 @@ function updateBackButton() {
   backButton.hidden = feedHistory.length === 0;
 }
 
-function setView(view) {
-  currentView = view;
-  localStorage.setItem(VIEW_STORAGE_KEY, view);
-  viewGridBtn.classList.toggle('active', view === 'grid');
-  viewTableBtn.classList.toggle('active', view === 'table');
-  videoGrid.hidden = view !== 'grid';
-  videoTable.hidden = view !== 'table';
-  renderCurrentView();
-}
-
 function renderCurrentView() {
-  const filtered = filterItemsByQuery(currentItems, searchInput.value);
-  if (currentView === 'table') {
-    renderTable(filtered);
-  } else {
-    renderGrid(filtered);
-  }
+  renderTable(filterItemsByQuery(currentItems, searchInput.value));
 }
 
 function appendBadges(target, item, subFeed) {
@@ -127,37 +104,6 @@ async function navigateToSubFeed(item) {
     feedHistory.push(parentUrl);
     updateBackButton();
   }
-}
-
-function renderGrid(items) {
-  videoGrid.innerHTML = '';
-  items.forEach((item) => {
-    const subFeed = isSubFeed(item);
-    const card = document.createElement('article');
-    card.className = 'video-card';
-    if (!item.enclosureUrl) {
-      card.classList.add('disabled');
-    }
-    if (subFeed) {
-      card.classList.add('subfeed');
-    }
-
-    const img = document.createElement('img');
-    img.src = item.thumbnail || 'placeholder.svg';
-    img.alt = item.title;
-    card.appendChild(img);
-
-    appendBadges(card, item, subFeed);
-
-    const title = document.createElement('div');
-    title.className = 'card-title';
-    title.textContent = item.title;
-    card.appendChild(title);
-
-    attachItemHandler(card, item, subFeed);
-
-    videoGrid.appendChild(card);
-  });
 }
 
 function stopPlayback() {
@@ -249,13 +195,5 @@ backButton.addEventListener('click', async () => {
     updateBackButton();
   }
 });
-
-viewGridBtn.addEventListener('click', () => setView('grid'));
-viewTableBtn.addEventListener('click', () => setView('table'));
-
-viewGridBtn.classList.toggle('active', currentView === 'grid');
-viewTableBtn.classList.toggle('active', currentView === 'table');
-videoGrid.hidden = currentView !== 'grid';
-videoTable.hidden = currentView !== 'table';
 
 loadFeed(FEED_URL);
