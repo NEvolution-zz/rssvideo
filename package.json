@@ -1,0 +1,15 @@
+{
+  "name": "rssvideo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Web dashboard and player for browsing and playing videos from an RSS video feed",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test test/"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "fast-xml-parser": "^4.4.1"
+  }
+}
