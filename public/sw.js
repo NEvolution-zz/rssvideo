@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rssvideo-static-v2';
+const CACHE_NAME = 'rssvideo-static-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -7,8 +7,6 @@ const STATIC_ASSETS = [
   '/clientLogic.mjs',
   '/placeholder.svg',
   '/manifest.webmanifest',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
 ];
 
 self.addEventListener('install', (event) => {
