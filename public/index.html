@@ -9,10 +9,6 @@
 <body>
   <header class="toolbar">
     <button id="back-button" type="button" hidden>&larr; Back</button>
-    <form id="feed-form">
-      <input id="feed-url-input" type="url" placeholder="RSS video feed URL" required />
-      <button type="submit">Load</button>
-    </form>
     <input id="search-input" type="search" placeholder="Search videos by title" />
     <button id="view-grid-btn" type="button" class="view-toggle active">Grid</button>
     <button id="view-table-btn" type="button" class="view-toggle">Table</button>
@@ -32,9 +28,7 @@
   <section id="player-panel" class="player-panel" hidden>
     <button id="player-close">&larr; Back to grid</button>
     <video id="player-video" controls></video>
-    <h2 id="player-title"></h2>
     <p id="player-error" class="error" hidden></p>
-    <div id="player-description"></div>
   </section>
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>

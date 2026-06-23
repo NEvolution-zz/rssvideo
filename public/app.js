@@ -1,11 +1,8 @@
 import { filterItemsByQuery, needsHls, isSubFeed } from './clientLogic.mjs';
 
-const STORAGE_KEY = 'rssvideo.feedUrl';
-const DEFAULT_FEED_URL = 'https://rssvideoplayer.com/sample.xml';
+const FEED_URL = 'https://allrss.se/dramas';
 const VIEW_STORAGE_KEY = 'rssvideo.view';
 
-const feedForm = document.getElementById('feed-form');
-const feedUrlInput = document.getElementById('feed-url-input');
 const searchInput = document.getElementById('search-input');
 const feedError = document.getElementById('feed-error');
 const videoGrid = document.getElementById('video-grid');
@@ -15,17 +12,14 @@ const viewGridBtn = document.getElementById('view-grid-btn');
 const viewTableBtn = document.getElementById('view-table-btn');
 const playerPanel = document.getElementById('player-panel');
 const playerVideo = document.getElementById('player-video');
-const playerTitle = document.getElementById('player-title');
-const playerDescription = document.getElementById('player-description');
 const playerError = document.getElementById('player-error');
 const playerClose = document.getElementById('player-close');
 const backButton = document.getElementById('back-button');
 
 let currentItems = [];
 let hls = null;
-// The feed actually displayed right now (root or a navigated-into sub-feed) —
-// distinct from feedUrlInput.value, which only ever reflects the root URL the
-// user typed/submitted.
+// The feed actually displayed right now (the hardcoded root, or a
+// navigated-into sub-feed).
 let currentFeedUrl = null;
 let feedHistory = [];
 
@@ -126,8 +120,9 @@ function renderTable(items) {
 async function navigateToSubFeed(item) {
   stopPlayback();
   playerPanel.hidden = true;
+  searchInput.value = '';
   const parentUrl = currentFeedUrl;
-  const succeeded = await loadFeed(item.enclosureUrl, { isNavigation: true });
+  const succeeded = await loadFeed(item.enclosureUrl);
   if (succeeded) {
     feedHistory.push(parentUrl);
     updateBackButton();
@@ -178,9 +173,9 @@ function stopPlayback() {
 function playItem(item) {
   showPlayerError('');
   stopPlayback();
+  searchInput.value = '';
+  renderCurrentView();
 
-  playerTitle.textContent = item.title;
-  playerDescription.textContent = item.description;
   playerPanel.hidden = false;
   playerPanel.scrollIntoView({ behavior: 'smooth' });
 
@@ -209,7 +204,7 @@ function playItem(item) {
   });
 }
 
-async function loadFeed(url, { isNavigation = false } = {}) {
+async function loadFeed(url) {
   showFeedError('');
   try {
     const res = await fetch(`/api/feed?url=${encodeURIComponent(url)}`);
@@ -220,9 +215,6 @@ async function loadFeed(url, { isNavigation = false } = {}) {
     }
     currentItems = body.items;
     currentFeedUrl = url;
-    if (!isNavigation) {
-      localStorage.setItem(STORAGE_KEY, url);
-    }
     renderCurrentView();
     return true;
   } catch (err) {
@@ -230,13 +222,6 @@ async function loadFeed(url, { isNavigation = false } = {}) {
     return false;
   }
 }
-
-feedForm.addEventListener('submit', (event) => {
-  event.preventDefault();
-  feedHistory = [];
-  updateBackButton();
-  loadFeed(feedUrlInput.value.trim());
-});
 
 searchInput.addEventListener('input', () => {
   renderCurrentView();
@@ -258,7 +243,7 @@ backButton.addEventListener('click', async () => {
   }
   stopPlayback();
   playerPanel.hidden = true;
-  const succeeded = await loadFeed(previousUrl, { isNavigation: true });
+  const succeeded = await loadFeed(previousUrl);
   if (succeeded) {
     feedHistory.pop();
     updateBackButton();
@@ -273,6 +258,4 @@ viewTableBtn.classList.toggle('active', currentView === 'table');
 videoGrid.hidden = currentView !== 'grid';
 videoTable.hidden = currentView !== 'table';
 
-const savedUrl = localStorage.getItem(STORAGE_KEY) || DEFAULT_FEED_URL;
-feedUrlInput.value = savedUrl;
-loadFeed(savedUrl);
+loadFeed(FEED_URL);

@@ -25,10 +25,6 @@ body {
   color: inherit;
 }
 
-#feed-url-input {
-  width: 22rem;
-}
-
 .error {
   color: #ff6b6b;
   padding: 0 1rem;
